@@ -7,6 +7,7 @@ tp6的BaseController封装，让代码优雅而简洁
 
 想要代码提示（方法提示和跳转），就要在前面添加相应的注释：
 
+```
 use app\admin\logic\AlbumLogic;
 
 
@@ -16,3 +17,6 @@ use app\admin\logic\AlbumLogic;
 $albumLogic = $this->albumLogic;
 
 $res = $albumLogic->add($data);
+
+```
+
