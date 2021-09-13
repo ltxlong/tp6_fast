@@ -14,7 +14,7 @@ $paramList = [
 ];
 //$validateRule = "app\common\UserValidate"; //验证器也行
 $validateRule = ['username' => 'require'];
-$modelName = 'app\common\model\Login'; // 为了维护方便，推荐在类的属性写个变量，并且类的路径获取用::class而不是像这样直接写字符串
+$modelName = 'app\common\model\Login'; // 为了维护方便，可以在类的属性写个变量，并且类的路径获取用::class而不是像这样直接写字符串，推荐更简洁的写法 $modelName = $this->commonLoginModel
 $res = DataEdit::instance() // 推荐继承在框架的控制器基类里，直接$this->dataEdit()->来进行调用
 ->setParam($paramList)
 ->setAppend(["append" => "this is append"])
