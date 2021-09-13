@@ -72,7 +72,7 @@ trait CommonTrait
 
     /**
      * 获取列表（分页）
-     * @param string $modelClass -- 模型路径
+     * @param $model -- 模型路径|模型对象
      * @param array $where
      * @param string $field
      * @param string $order
@@ -80,13 +80,15 @@ trait CommonTrait
      * @return array
      */
     public function getListPage(
-        string $modelClass,
+        $model,
         array $where = [],
         string $field = '*',
         string $order = 'id desc',
         int $perPage = 10
     ) {
-        $model = app($modelClass);
+        if (is_string($model)) {
+            $model = app($model);
+        }
 
         $query = $model->where($where)->field($field);
 
@@ -101,19 +103,21 @@ trait CommonTrait
 
     /**
      * 获取列表（不分页）
-     * @param string $modelClass -- 模型路径
+     * @param $model -- 模型路径|模型对象
      * @param array $where
      * @param string $field
      * @param string $order
      * @return array
      */
     public function getListOnly(
-        string $modelClass,
+        $model,
         array $where = [],
         string $field = '*',
         string $order = 'id desc'
     ) {
-        $model = app($modelClass);
+        if (is_string($model)) {
+            $model = app($model);
+        }
 
         $res = $model->where($where)->field($field)->order($order)->select();
 
