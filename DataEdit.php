@@ -45,7 +45,7 @@ class DataEdit
     protected $updateMap;
     protected $isUpdate;
     protected $pk;
-    protected $allowField;
+    protected $allowField = [];
     protected $result;
     protected $error;
 
