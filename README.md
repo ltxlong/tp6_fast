@@ -22,3 +22,39 @@ $res = $albumLogic->add($data);
 
 ```
 
+```
+public function listPage()
+    {
+
+        $param = $this->request->only(
+            [
+                'name',
+                'begin_time',
+                'end_time',
+                'folder',
+                'page',
+                'per_page'
+            ]
+        );
+
+        $where = [];
+        if (!empty($param['name'])) {
+            $where[] = ['name', 'like', '%' . $param['name'] . '%'];
+        }
+        if (!empty($param['folder'])) {
+            $where[] = ['folder', '=', $param['folder']];
+        }
+        if (!empty($param['begin_time'])) {
+            $where[] = ['created_at', '>=', strtotime($param['begin_time'])];
+        }
+        if (!empty($param['end_time'])) {
+            $where[] = ['created_at', '<=', strtotime($param['end_time'])];
+        }
+        $where[] = ['is_del', '=', 0];
+
+        $list = $this->getListPage($this->albumModel, $where, '*', 'id desc', $param['per_page'] ?? 10);
+
+        return retJson('', 0, $list);
+    }
+    
+```
