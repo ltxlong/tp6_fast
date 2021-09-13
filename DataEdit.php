@@ -40,8 +40,8 @@ class DataEdit
     protected $validate;
     protected $data;
     protected $saveData;
-    protected $model;
-    protected $modelClass;
+    protected $model = '';
+    protected $modelClass = null;
     protected $updateMap;
     protected $isUpdate;
     protected $pk;
@@ -200,7 +200,7 @@ class DataEdit
      */
     public function setValidate($validate)
     {
-        if (is_array($validate) || is_string($validate)) {
+        if (!empty($validate) && (is_array($validate) || is_string($validate))) {
             $this->validate = $validate;
 
             return $this;
@@ -211,14 +211,18 @@ class DataEdit
 
     /**
      * 设置model
-     * @param string $model -- model路径
+     * @param $model -- model路径|实例
      * @return $this
      * @throws ApiException
      */
-    public function setModel($model = '')
+    public function setModel($model)
     {
-        if (!empty($model) && is_string($model)) {
-            $this->model = $model;
+        if (!empty($model)) {
+            if (is_string($model)) {
+                $this->model = $model;
+            } else {
+                $this->modelClass = $model;
+            }
 
             return $this;
         } else {
@@ -413,7 +417,10 @@ class DataEdit
             if (!$this->checkSaveDate()) {
                 return false;
             }
-            $this->modelClass = app($this->model);
+
+            if (!empty($this->model)) {
+                $this->modelClass = app($this->model);
+            }
 
             return true;
         } catch (\Exception $e) {
