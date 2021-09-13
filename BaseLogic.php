@@ -13,6 +13,12 @@ use app\common\traits\CommonTrait;
 class BaseLogic
 {
     /**
+     * Request实例
+     * @var \think\Request
+     */
+    protected $request;
+    
+    /**
      * @param $name
      * @return BaseModel|\think\App
      * @author longtaixuan
