@@ -256,8 +256,13 @@ class DataEdit
     {
         $data = [];
         $request = $this->request;
+        $reqParam = $request->param();
+
         foreach ($param as $k => $v) {
-            $data[$k] = $request->param($v);
+            $vArr = explode('/', $v);
+            if (isset($reqParam[$vArr[0]])) {
+                $data[$k] = $request->param($v);
+            }
         }
 
         return $data;
