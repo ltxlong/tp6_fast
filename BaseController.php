@@ -101,13 +101,13 @@ abstract class BaseController
      */
     public function __get($name)
     {
-        // 判断类别Model、Logic、Service
+        // 判断类别Model、Logic、Service、Validate
         // 先看common前缀，再看后缀
         // 有common的就去common找，非common的就先找当前应用
         // 非common的要首字母大写转换
         // 默认：
-        // 存放的文件夹是model、logic、service
-        // 除了model文件，logic和service文件名分别添加后缀Logic和Service
+        // 存放的文件夹是model、logic、service、validate
+        // 除了model文件，logic、service、validate文件名分别添加后缀Logic、Service、Validate
 
         $isCommon = false;
         if (strpos($name, 'common') === 0) {
@@ -122,6 +122,9 @@ abstract class BaseController
                 break;
             case strstr($name, 'Service') === 'Service':
                 $suffix = 'Service';
+                break;
+            case strstr($name, 'Validate') === 'Validate':
+                $suffix = 'Validate';
                 break;
             default:
                 $suffix = 'Logic';
