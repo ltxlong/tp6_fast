@@ -62,8 +62,14 @@ trait CommonTrait
     {
         $param = [];
         if (is_array($arr)) {
+            $request = $this->request;
+            $reqParam = $request->param();
+
             foreach ($arr as $k => $v) {
-                $param[$k] = $this->request->param($v);
+                $vArr = explode('/', $v);
+                if (isset($reqParam[$vArr[0]])) {
+                    $param[$k] = $request->param($v);
+                }
             }
         }
 
