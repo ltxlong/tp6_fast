@@ -12,12 +12,13 @@ use app\common\traits\CommonTrait;
  */
 class BaseLogic
 {
+
     /**
      * Request实例
      * @var \think\Request
      */
     protected $request;
-    
+
     /**
      * @param $name
      * @return BaseModel|\think\App
@@ -26,13 +27,13 @@ class BaseLogic
      */
     public function __get($name)
     {
-        // 判断类别Model、Service
+        // 判断类别Model、Service、Validate
         // 先看common前缀，再看后缀
         // 有common的就去common找，非common的就先找当前应用
         // 非common的要首字母大写转换
         // 默认：
-        // 存放的文件夹是model、service
-        // 除了model文件，service文件名添加后缀Service
+        // 存放的文件夹是model、service、validate
+        // 除了model文件，service、Validate文件名添加后缀Service、Validate
 
         $isCommon = false;
         if (strpos($name, 'common') === 0) {
@@ -45,6 +46,9 @@ class BaseLogic
                 break;
             case strstr($name, 'Service') === 'Service':
                 $suffix = 'Service';
+                break;
+            case strstr($name, 'Validate') === 'Validate':
+                $suffix = 'Validate';
                 break;
             default:
                 $suffix = 'Model';
@@ -66,6 +70,6 @@ class BaseLogic
 
         return app($classPath);
     }
-    
+
     use CommonTrait;
 }
