@@ -4,6 +4,7 @@ namespace app;
 
 
 use app\common\traits\CommonTrait;
+use think\App;
 
 /**
  * 逻辑基类
@@ -12,12 +13,31 @@ use app\common\traits\CommonTrait;
  */
 class BaseLogic
 {
-
     /**
      * Request实例
      * @var \think\Request
      */
     protected $request;
+
+    /**
+     * 应用实例
+     * @access public
+     * @var App $app 应用对象
+     */
+    protected $app;
+
+    public function __construct(App $app)
+    {
+        $this->app = $app;
+        $this->request = $this->app->request;
+
+        // 逻辑初始化
+        $this->initialize();
+    }
+
+    // 初始化
+    protected function initialize()
+    {}
 
     /**
      * @param $name
