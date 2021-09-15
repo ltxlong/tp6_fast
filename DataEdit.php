@@ -40,6 +40,7 @@ class DataEdit
     protected $validate;
     protected $data;
     protected $saveData;
+    protected $useSetData  = false;
     protected $model = '';
     protected $modelClass = null;
     protected $updateMap;
@@ -185,6 +186,7 @@ class DataEdit
     {
         if (!empty($data) && is_array($data)) {
             $this->data = $data;
+            $this->useSetData = true;
 
             return $this;
         } else {
@@ -377,7 +379,15 @@ class DataEdit
             if (!$this->actionHandle()) {
                 throw new ApiException([100, $this->getError()]);
             }
-            $this->result = $this->modelClass->saveAll($this->saveData);
+            $saveData = $this->saveData;
+            if ($this->useSetData) {
+                if ($this->isAssoc($saveData)) {
+                    $saveData = [$saveData];
+                }
+            } else {
+                $saveData  = [$saveData];
+            }
+            $this->result = $this->modelClass->saveAll($saveData);
 
             return $this->result;
         } catch (\Exception $e) {
@@ -561,5 +571,17 @@ class DataEdit
             default:
                 return json_encode($this->error);
         }
+    }
+
+    /**
+     * 判断是否关联数组
+     * @param array $array
+     * @return bool
+     */
+    protected function isAssoc($array = [])
+    {
+        $keys = array_keys($array);
+
+        return $keys != array_keys($keys);
     }
 }
