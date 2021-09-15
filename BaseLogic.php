@@ -27,13 +27,13 @@ class BaseLogic
      */
     public function __get($name)
     {
-        // 判断类别Model、Service、Validate
+        // 判断类别Model、Logic、Service、Validate
         // 先看common前缀，再看后缀
         // 有common的就去common找，非common的就先找当前应用
         // 非common的要首字母大写转换
         // 默认：
-        // 存放的文件夹是model、service、validate
-        // 除了model文件，service、Validate文件名添加后缀Service、Validate
+        // 存放的文件夹是model、Logic、service、validate
+        // 除了model文件，Logic、service、Validate文件名添加后缀Logic、Service、Validate
 
         $isCommon = false;
         if (strpos($name, 'common') === 0) {
@@ -43,6 +43,9 @@ class BaseLogic
         switch ($name) {
             case strstr($name, 'Model') === 'Model':
                 $suffix = 'Model';
+                break;
+            case strstr($name, 'Logic') === 'Logic':
+                $suffix = 'Logic';
                 break;
             case strstr($name, 'Service') === 'Service':
                 $suffix = 'Service';
