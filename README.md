@@ -230,6 +230,8 @@ public function listPage()
     setUpdateMap([]) -- 更新条件
     saveAll() -- 自动识别新增、更新
     execModelAction('') -- 执行模型的方法，参数是方法名；而这个模型的方法的参数是设置的数据数组
+    
+    关于saveAll()，无论是配合用setParam()还是setData()，都会自动判断是否数据数组
 ```
 
 - 结果返回：可以直接用if来判断成功和失败
