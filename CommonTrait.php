@@ -56,28 +56,66 @@ trait CommonTrait
     /**
      * 获取参数转换
      * @param $arr
+     * @param array|string $data 数据数组或者获取数据的方法名
      * @return array
      */
-    public function buildParam($arr)
+    public function buildParam($arr, $data = 'param')
     {
         $param = [];
         if (is_array($arr)) {
             $request = $this->request;
-            $reqParam = $request->param();
+            $isDataArr = is_array($data);
+            $reqParam = $isDataArr ? $data : $request->$data();
 
             foreach ($arr as $k => $v) {
                 $vArr = explode('/', $v);
                 if (isset($reqParam[$vArr[0]])) {
                     if (is_int($k)) {
-                        $param[$vArr[0]] = $request->param($v);
+                        $param[$vArr[0]] = $isDataArr ? $this->transformValue($reqParam[$vArr[0]], $vArr[1] ?? '') : $request->$data($v);
                     } else {
-                        $param[$k] = $request->param($v);
+                        $param[$k] = $isDataArr ? $this->transformValue($reqParam[$vArr[0]], $vArr[1] ?? '') : $request->$data($v);
                     }
                 }
             }
         }
 
         return $param;
+    }
+
+    /**
+     * 变量类型转换
+     * @param string $value 变量
+     * @param string $toType 要转换的类型
+     * @return array|bool|float|int|mixed|string
+     */
+    public function transformValue($value = '', $toType = '')
+    {
+        switch ($toType) {
+            case 'string':
+            case 's':
+                $valueRes = (string)$value;
+                break;
+            case 'int':
+            case 'd':
+                $valueRes = (int)$value;
+                break;
+            case 'array':
+            case 'a':
+                $valueRes = (array)$value;
+                break;
+            case 'bool':
+            case 'b':
+                $valueRes = (bool)$value;
+                break;
+            case 'float':
+            case 'f':
+                $valueRes = (float)$value;
+                break;
+            default:
+                $valueRes = $value;
+        }
+
+        return $valueRes;
     }
 
     /**
