@@ -151,7 +151,7 @@ public function listPage()
     {
         $param = $this->request->only(
             [
-                'name/s'
+                'name'
             ]
         );
 
@@ -176,7 +176,7 @@ public function listPage()
     public function add()
     {
         $paramList = [
-            'name' => 'name/s'
+            'name/s'
         ];
 
         $validate = [
@@ -196,7 +196,8 @@ public function listPage()
     setParam()方法配合 $paramList数组
     $paramList = [
         'name' => 'my_name/s',
-        'age' => 'my_age/d'
+        'age' => 'my_age/d',
+        'desc/s'
     ];
     $paramList的key是允许接收的，并且要用的参数名；value是前端传过来的参数名，并且可以添加类型限制，是tp6的
     
