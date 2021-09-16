@@ -8,9 +8,11 @@ use think\facade\Validate;
 
 /**
 $paramList = [
-"username" => "username/s",
-"address" => "address/s",
+"my_username" => "username/s",
+"my_address" => "address/s",
 "desc" => "desc/s",
+"content/s",
+"test"
 ];
 //$validateRule = "app\common\UserValidate"; //验证器也行
 $validateRule = ['username' => 'require'];
