@@ -92,7 +92,9 @@ class DataEdit
     {
         if (!empty($param) && is_array($param)) {
             $this->param = $param;
-            $this->paramMethod = $paramMethod;
+            if (is_string($paramMethod)) {
+                $this->paramMethod = $paramMethod;
+            }
 
             return $this;
         } else {
