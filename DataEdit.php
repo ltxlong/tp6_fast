@@ -38,6 +38,7 @@ class DataEdit
     protected static $instance;
     protected $request;
     protected $param;
+    protected $paramMethod = 'param';
     protected $append;
     protected $validate;
     protected $data;
@@ -83,13 +84,15 @@ class DataEdit
     /**
      * 设置获取参数
      * @param array $param
+     * @param string $paramMethod
      * @return $this
      * @throws ApiException
      */
-    public function setParam($param = [])
+    public function setParam($param = [], $paramMethod = 'param')
     {
         if (!empty($param) && is_array($param)) {
             $this->param = $param;
+            $this->paramMethod = $paramMethod;
 
             return $this;
         } else {
@@ -253,27 +256,67 @@ class DataEdit
 
     /**
      * 构建参数
-     * @param array $param
+     * @param array $arr
+     * @param array|string $data
      * @return array
      */
-    public function buildParam($param = [])
+    public function buildParam($arr, $data = 'param')
     {
-        $data = [];
-        $request = $this->request;
-        $reqParam = $request->param();
+        $param = [];
+        if (is_array($arr)) {
+            $request = $this->request;
+            $isDataArr = is_array($data);
+            $reqParam = $isDataArr ? $data : $request->$data();
 
-        foreach ($param as $k => $v) {
-            $vArr = explode('/', $v);
-            if (isset($reqParam[$vArr[0]])) {
-                if (is_int($k)) {
-                    $data[$vArr[0]] = $request->param($v);
-                } else {
-                    $data[$k] = $request->param($v);
+            foreach ($arr as $k => $v) {
+                $vArr = explode('/', $v);
+                if (isset($reqParam[$vArr[0]])) {
+                    if (is_int($k)) {
+                        $param[$vArr[0]] = $isDataArr ? $this->transformValue($reqParam[$vArr[0]], $vArr[1] ?? '') : $request->$data($v);
+                    } else {
+                        $param[$k] = $isDataArr ? $this->transformValue($reqParam[$vArr[0]], $vArr[1] ?? '') : $request->$data($v);
+                    }
                 }
             }
         }
 
-        return $data;
+        return $param;
+    }
+
+    /**
+     * 变量类型转换
+     * @param string $value 变量
+     * @param string $toType 要转换的类型
+     * @return array|bool|float|int|mixed|string
+     */
+    public function transformValue($value = '', $toType = '')
+    {
+        switch ($toType) {
+            case 'string':
+            case 's':
+                $valueRes = (string)$value;
+                break;
+            case 'int':
+            case 'd':
+                $valueRes = (int)$value;
+                break;
+            case 'array':
+            case 'a':
+                $valueRes = (array)$value;
+                break;
+            case 'bool':
+            case 'b':
+                $valueRes = (bool)$value;
+                break;
+            case 'float':
+            case 'f':
+                $valueRes = (float)$value;
+                break;
+            default:
+                $valueRes = $value;
+        }
+
+        return $valueRes;
     }
 
     /**
@@ -464,7 +507,7 @@ class DataEdit
                 throw new ApiException([100, 'setParam和setData不可同时设置，请使用append方法']);
                 break;
             case ($this->param):
-                $this->saveData = $this->buildParam($this->param);
+                $this->saveData = $this->buildParam($this->param, $this->paramMethod);
                 break;
             case ($this->data):
                 $this->saveData = $this->data;
