@@ -263,7 +263,11 @@ class DataEdit
         foreach ($param as $k => $v) {
             $vArr = explode('/', $v);
             if (isset($reqParam[$vArr[0]])) {
-                $data[$k] = $request->param($v);
+                if (is_int($k)) {
+                    $data[$vArr[0]] = $request->param($v);
+                } else {
+                    $data[$k] = $request->param($v);
+                }
             }
         }
 
