@@ -137,7 +137,7 @@ public function listPage()
 个人推荐，能用$this->来实例化，就不用$this->class()/model()/logic()，
 毕竟$this->写法更加的简洁，不仅不用新增private属性，并且可以有代码提示
 
-buildParam()的第二个参数，可以是现成的数组，也可以是接收数据的方法名，如param/post/get，会直接调用$this->request->post()来后去数据，默认param()
+buildParam()的第二个参数，可以是现成的数组，也可以是接收数据的方法名，如param/post/get，会直接调用$this->request->post()来获取数据，默认param()
 
 示例： buildParam($paramList, 'post')、buildParam($paramList, $data)
 
@@ -205,7 +205,7 @@ buildParam()的第二个参数，可以是现成的数组，也可以是接收�
     ];
     $paramList的key是允许接收的，并且要用的参数名；value是前端传过来的参数名，并且可以添加类型限制，是tp6的
     
-    setParam()的第二个参数是接收数据的方法名，如param/post/get，会直接调用$this->request->post()来后去数据，默认param()
+    setParam()的第二个参数是接收数据的方法名，如param/post/get，会直接调用$this->request->post()来获取数据，默认param()
     示例：setParam($paramList, 'post')
     
     如果不需要参数名转换，不需要强制类型限制，那么直接用：
