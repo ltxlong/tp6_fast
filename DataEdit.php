@@ -209,7 +209,7 @@ class DataEdit
      */
     public function setValidate($validate)
     {
-        if (!empty($validate) && (is_array($validate) || is_string($validate))) {
+        if (!empty($validate) && (is_array($validate) || is_string($validate) || is_object($validate))) {
             $this->validate = $validate;
 
             return $this;
@@ -438,7 +438,13 @@ class DataEdit
             } else {
                 $saveData  = [$saveData];
             }
-            $this->result = $this->modelClass->saveAll($saveData);
+
+            $res = $this->modelClass->saveAll($saveData);
+            if ($res) {
+                $this->result = $res;
+            } else {
+                $this->result = false;
+            }
 
             return $this->result;
         } catch (\Exception $e) {
@@ -538,6 +544,8 @@ class DataEdit
             $this->error = Validate::getError();
         } elseif (is_string($this->validate)) {
             app($this->validate)->goCheck();
+        } elseif (is_object($this->validate)) {
+            $this->validate->goCheck();
         }
 
         return $flag;
