@@ -74,9 +74,8 @@ class DataEdit
      */
     public static function instance($options = [])
     {
-        if (is_null(self::$instance)) {
-            self::$instance = new static($options);
-        }
+        // 如果用单例的话，一次请求只能用一次的DataEdit
+        self::$instance = new static($options);
 
         return self::$instance;
     }
@@ -422,7 +421,7 @@ class DataEdit
 
     /**
      * saveAll，自动判断新增和更新
-     * @return false
+     * @return array
      */
     public function saveAll()
     {
@@ -443,7 +442,7 @@ class DataEdit
             if ($res) {
                 $this->result = $res;
             } else {
-                $this->result = false;
+                $this->result = [];
             }
 
             return $this->result;
@@ -451,7 +450,7 @@ class DataEdit
             $this->error = $e->getMessage();
             lo($e->getMessage());
 
-            return false;
+            return [];
         }
     }
 
@@ -540,7 +539,18 @@ class DataEdit
             $this->error = '要保存的数据为空';
         }
         if (is_array($this->validate)) {
-            $flag = Validate::rule($this->validate)->check($this->saveData);
+            if ($this->isAssoc($this->saveData)) {
+                $flag = Validate::rule($this->validate)->check($this->saveData);
+            } else {
+                // 支持多个数组同时验证
+                foreach ($this->saveData as $checkData) {
+                    $flag = Validate::rule($this->validate)->check($checkData);
+                    if (!$flag) {
+                        break;
+                    }
+                }
+            }
+
             $this->error = Validate::getError();
         } elseif (is_string($this->validate)) {
             app($this->validate)->goCheck();
