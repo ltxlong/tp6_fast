@@ -644,13 +644,11 @@ class DataEdit
 
     /**
      * 判断是否关联数组
-     * @param array $array
+     * @param array $arr
      * @return bool
      */
-    protected function isAssoc($array = [])
+    protected function isAssoc(array $arr = [])
     {
-        $keys = array_keys($array);
-
-        return $keys != array_keys($keys);
+        return array_keys($arr) !== range(0, count($arr) - 1);
     }
 }
