@@ -204,6 +204,24 @@ buildParam()的第二个参数，可以是现成的数组，也可以是接收�
         'desc/s'
     ];
     $paramList的key是允许接收的，并且要用的参数名；value是前端传过来的参数名，并且可以添加类型限制，是tp6的
+    $paramList可以设置默认值，即如果客户端没有传该key过来/要buildParam的数组没有该key，就默认值。
+    设置默认值：
+    在value的最后增加??默认值
+    如：
+    $paramList = [
+        'name' => 'my_name/s'
+        'age' => 'my_age/d',
+        'desc/s??我是描述'
+    ];
+    那么，如果客户端没有传desc过来/要buildParam的数组没有desc，就默认desc的值是【我是描述】
+    
+    'desc' => 'my_desc/s??默认描述' 或者 'desc' => 'my_desc??默认描述'（有了/s就会将??后面的进行强制类型转换）
+    那么，desc的默认值是【默认描述】
+    
+    'page/d??1'
+    那么，page的默认值是1，因为加了/d，所以会将??后面的1强制转换为int类型
+    
+    注意，??设置默认值，值能加在最后！！！（'page??1/d'这样是错误的，正确是??设置加在最后：'page/d??1'）
     
     setParam()的第二个参数是接收数据的方法名，如param/post/get，会直接调用$this->request->post()来获取数据，默认param()
     示例：setParam($paramList, 'post')
@@ -221,6 +239,7 @@ buildParam()的第二个参数，可以是现成的数组，也可以是接收�
     参数校验
     setValidate()
     这个方法的参数，可以是Validate校验器的路径，也可以是rule数组
+    这个方法支持设置自定义错误数组和批量验证，分别是第二和第三个参数
 ```
 
 ```injectablephp
