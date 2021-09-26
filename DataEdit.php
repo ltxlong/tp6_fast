@@ -9,6 +9,7 @@ use think\facade\Validate;
 /**
 $paramList = [
 "my_username" => "username/s",
+//"my_username" => "username/s??默认值",
 "my_address" => "address/s",
 "desc" => "desc/s",
 "content/s",
@@ -41,6 +42,8 @@ class DataEdit
     protected $paramMethod = 'param';
     protected $append;
     protected $validate;
+    protected $validateTipMsg;
+    protected $validateBatch;
     protected $data;
     protected $saveData;
     protected $useSetData  = false;
@@ -203,13 +206,17 @@ class DataEdit
     /**
      * 设置validate
      * @param $validate -- rule或者验证器路径
+     * @param array $validateTipMsg -- rule验证提示数组，只有$validate是rule数组才生效
+     * @param bool $validateBatch -- rule是否批量验证，只有$validate是rule数组才生效
      * @return $this
      * @throws ApiException
      */
-    public function setValidate($validate)
+    public function setValidate($validate, array $validateTipMsg = [], bool $validateBatch = false)
     {
         if (!empty($validate) && (is_array($validate) || is_string($validate) || is_object($validate))) {
             $this->validate = $validate;
+            $this->validateTipMsg = $validateTipMsg;
+            $this->validateBatch = $validateBatch;
 
             return $this;
         } else {
@@ -270,12 +277,19 @@ class DataEdit
             $reqParam = $isDataArr ? $data : $request->$data();
 
             foreach ($arr as $k => $v) {
-                $vArr = explode('/', $v);
+                $vv = explode('??', $v); // ??后面跟的是默认值
+                $vArr = explode('/', $vv[0]); // /后面跟的是强制转换类型
+                $vv[1] = $vv[1] ?? '';
+
                 if (isset($reqParam[$vArr[0]])) {
+                    $val = $isDataArr ?
+                        $this->transformValue($reqParam[$vArr[0]] ?? $vv[1], $vArr[1] ?? '') :
+                        ($request->$data($v) ?? $this->transformValue($vv[1], $vArr[1] ?? ''));
+
                     if (is_int($k)) {
-                        $param[$vArr[0]] = $isDataArr ? $this->transformValue($reqParam[$vArr[0]], $vArr[1] ?? '') : $request->$data($v);
+                        $param[$vArr[0]] = $val;
                     } else {
-                        $param[$k] = $isDataArr ? $this->transformValue($reqParam[$vArr[0]], $vArr[1] ?? '') : $request->$data($v);
+                        $param[$k] = $val;
                     }
                 }
             }
@@ -540,11 +554,32 @@ class DataEdit
         }
         if (is_array($this->validate)) {
             if ($this->isAssoc($this->saveData)) {
-                $flag = Validate::rule($this->validate)->check($this->saveData);
+                $validate = Validate::rule($this->validate);
+
+                if ($this->validateBatch) {
+                    $validate = $validate->batch(true);
+                }
+
+                if (!empty($this->validateTipMsg)) {
+                    $validate = $validate->message($this->validateTipMsg);
+                }
+
+                $flag = $validate->check($this->saveData);
             } else {
                 // 支持多个数组同时验证
                 foreach ($this->saveData as $checkData) {
-                    $flag = Validate::rule($this->validate)->check($checkData);
+                    $validate = Validate::rule($this->validate);
+
+                    if ($this->validateBatch) {
+                        $validate = $validate->batch(true);
+                    }
+
+                    if (!empty($this->validateTipMsg)) {
+                        $validate = $validate->message($this->validateTipMsg);
+                    }
+
+                    $flag = $validate->check($checkData);
+
                     if (!$flag) {
                         break;
                     }
