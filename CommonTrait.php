@@ -69,7 +69,7 @@ trait CommonTrait
 
             foreach ($arr as $k => $v) {
                 $vArr = explode('/', $v);
-                if (isset($reqParam[$vArr[0]])) {
+                if (isset($reqParam[$vArr[0]]) || strpos($v, '??') !== false) {
                     if (is_int($k)) {
                         $param[$vArr[0]] = $isDataArr ? $this->transformValue($reqParam[$vArr[0]], $vArr[1] ?? '') : $request->$data($v);
                     } else {
