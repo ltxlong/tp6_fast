@@ -68,12 +68,19 @@ trait CommonTrait
             $reqParam = $isDataArr ? $data : $request->$data();
 
             foreach ($arr as $k => $v) {
-                $vArr = explode('/', $v);
+                $vv = explode('??', $v); // ??后面跟的是默认值
+                $vArr = explode('/', $vv[0]); // /后面跟的是强制转换类型
+                $vv[1] = $vv[1] ?? '';
+
                 if (isset($reqParam[$vArr[0]]) || strpos($v, '??') !== false) {
+                    $val = $isDataArr ?
+                        $this->transformValue($reqParam[$vArr[0]] ?? $vv[1], $vArr[1] ?? '') :
+                        ($request->$data($v) ?? $this->transformValue($vv[1], $vArr[1] ?? ''));
+
                     if (is_int($k)) {
-                        $param[$vArr[0]] = $isDataArr ? $this->transformValue($reqParam[$vArr[0]], $vArr[1] ?? '') : $request->$data($v);
+                        $param[$vArr[0]] = $val;
                     } else {
-                        $param[$k] = $isDataArr ? $this->transformValue($reqParam[$vArr[0]], $vArr[1] ?? '') : $request->$data($v);
+                        $param[$k] = $val;
                     }
                 }
             }
