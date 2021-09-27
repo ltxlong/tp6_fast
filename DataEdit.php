@@ -281,7 +281,7 @@ class DataEdit
                 $vArr = explode('/', $vv[0]); // /后面跟的是强制转换类型
                 $vv[1] = $vv[1] ?? '';
 
-                if (isset($reqParam[$vArr[0]])) {
+                if (isset($reqParam[$vArr[0]]) || strpos($v, '??') !== false) {
                     $val = $isDataArr ?
                         $this->transformValue($reqParam[$vArr[0]] ?? $vv[1], $vArr[1] ?? '') :
                         ($request->$data($v) ?? $this->transformValue($vv[1], $vArr[1] ?? ''));
