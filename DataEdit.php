@@ -337,13 +337,14 @@ class DataEdit
     /**
      * 存储数据，自动判断新增和更新
      * @return false
+     * @throws ApiException
      */
     public function save()
     {
+        if (!$this->actionHandle()) {
+            throw new ApiException([100, $this->getError()]);
+        }
         try {
-            if (!$this->actionHandle()) {
-                throw new ApiException([100, $this->getError()]);
-            }
             $this->checkPk();
             if ($this->updateMap && isset($this->saveData[$this->pk])) {
                 if (!isset($this->updateMap[$this->pk])) {
@@ -373,13 +374,14 @@ class DataEdit
     /**
      * 更新数据
      * @return false
+     * @throws ApiException
      */
     public function update()
     {
+        if (!$this->actionHandle()) {
+            throw new ApiException([100, $this->getError()]);
+        }
         try {
-            if (!$this->actionHandle()) {
-                throw new ApiException([100, $this->getError()]);
-            }
             $this->checkPk();
             if ($this->updateMap && isset($this->saveData[$this->pk])) {
                 if (!isset($this->updateMap[$this->pk])) {
@@ -410,13 +412,14 @@ class DataEdit
     /**
      * 新增数据
      * @return false
+     * @throws ApiException
      */
     public function add()
     {
+        if (!$this->actionHandle()) {
+            throw new ApiException([100, $this->getError()]);
+        }
         try {
-            if (!$this->actionHandle()) {
-                throw new ApiException([100, $this->getError()]);
-            }
             $this->checkPk();
             if ($this->isUpdate && isset($this->saveData[$this->pk])) {
                 unset($this->saveData[$this->pk]);
@@ -436,13 +439,14 @@ class DataEdit
     /**
      * saveAll，自动判断新增和更新
      * @return array
+     * @throws ApiException
      */
     public function saveAll()
     {
+        if (!$this->actionHandle()) {
+            throw new ApiException([100, $this->getError()]);
+        }
         try {
-            if (!$this->actionHandle()) {
-                throw new ApiException([100, $this->getError()]);
-            }
             $saveData = $this->saveData;
             if ($this->useSetData) {
                 if ($this->isAssoc($saveData)) {
@@ -472,16 +476,17 @@ class DataEdit
      * 执行model方法
      * @param $actionName
      * @return false
+     * @throws ApiException
      */
     public function execModelAction($actionName)
     {
+        if (!$this->actionHandle()) {
+            throw new ApiException([100, $this->error]);
+        }
+        if (!method_exists($this->modelClass, $actionName)) {
+            throw new ApiException([100, '自定义的模型方法不存在']);
+        }
         try {
-            if (!$this->actionHandle()) {
-                throw new ApiException([100, $this->error]);
-            }
-            if (!method_exists($this->modelClass, $actionName)) {
-                throw new ApiException([100, '自定义的模型方法不存在']);
-            }
             $this->result = $this->modelClass->$actionName($this->saveData);
 
             return $this->result;
@@ -565,6 +570,9 @@ class DataEdit
                 }
 
                 $flag = $validate->check($this->saveData);
+                if (!$flag) {
+                    $this->error = $validate->getError();
+                }
             } else {
                 // 支持多个数组同时验证
                 foreach ($this->saveData as $checkData) {
@@ -581,12 +589,11 @@ class DataEdit
                     $flag = $validate->check($checkData);
 
                     if (!$flag) {
+                        $this->error = $validate->getError();
                         break;
                     }
                 }
             }
-
-            $this->error = Validate::getError();
         } elseif (is_string($this->validate)) {
             app($this->validate)->goCheck();
         } elseif (is_object($this->validate)) {
